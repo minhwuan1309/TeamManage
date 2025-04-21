@@ -1,0 +1,9 @@
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+_ReSharper.*
+bin
+obj
+packages
