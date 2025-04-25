@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using TaskManage.Models;
+using TeamManage.Models;
 
 namespace TeamManage.Data
 {

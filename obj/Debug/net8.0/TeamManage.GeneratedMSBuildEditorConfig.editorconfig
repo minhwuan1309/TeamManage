@@ -68,6 +68,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBY2NvdW50XFBhZ2VzXExvZ2luV2l0aFJlY292ZXJ5Q29kZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/.NET/TeamManage/TeamManage/Components/Account/Pages/Logout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBY2NvdW50XFBhZ2VzXExvZ291dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/.NET/TeamManage/TeamManage/Components/Account/Pages/Manage/ChangePassword.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBY2NvdW50XFBhZ2VzXE1hbmFnZVxDaGFuZ2VQYXNzd29yZC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
@@ -194,6 +198,14 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/.NET/TeamManage/TeamManage/Components/Pages/Weather.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xXZWF0aGVyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/.NET/TeamManage/TeamManage/Components/Project/AddProject.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQcm9qZWN0XEFkZFByb2plY3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/.NET/TeamManage/TeamManage/Components/Project/ProjectManage.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQcm9qZWN0XFByb2plY3RNYW5hZ2UucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/.NET/TeamManage/TeamManage/Components/Routes.razor]

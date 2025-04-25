@@ -29,12 +29,27 @@
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
             </NavLink>
         </div>
+        <!-- Quản lý Project -->
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/projects">
+                <span class="bi bi-list-nested-nav-menu" /> Quản lý Project
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/add-project">
+                <span class="bi bi-plus-square-fill-nav-menu" /> Thêm Project
+            </NavLink>
+        </div>
+
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="auth">
                 <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
             </NavLink>
         </div>
+
+
 
         <AuthorizeView>
             <Authorized>
@@ -44,13 +59,9 @@
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
-                    <form action="Account/Logout" method="post">
-                        <AntiforgeryToken />
-                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                        <button type="submit" class="nav-link">
-                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
-                        </button>
-                    </form>
+                    <NavLink class="nav-link" href="/logout">
+                        <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
+                    </NavLink>
                 </div>
             </Authorized>
             <NotAuthorized>
@@ -66,6 +77,7 @@
                 </div>
             </NotAuthorized>
         </AuthorizeView>
+
     </nav>
 </div>
 

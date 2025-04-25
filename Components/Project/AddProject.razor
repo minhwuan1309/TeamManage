@@ -1,0 +1,47 @@
+﻿@page "/add-project"
+@using TeamManage.Models.DTO
+@using System.Net.Http.Json
+@inject IHttpClientFactory ClientFactory
+
+<h3 class="text-xl font-bold mb-4">➕ Thêm Project</h3>
+
+<EditForm Model="@newProject" OnValidSubmit="@HandleValidSubmit" FormName="AddProjectForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Tên project</label>
+        <InputText class="form-control" @bind-Value="newProject.Name" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Mô tả</label>
+        <InputText class="form-control" @bind-Value="newProject.Description" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Deadline</label>
+        <InputDate class="form-control" @bind-Value="newProject.Deadline" />
+    </div>
+
+    <button type="submit" class="btn btn-success">💾 Lưu Project</button>
+</EditForm>
+
+@code {
+    private ProjectDTO newProject = new() { Deadline = DateTime.Now.AddDays(7) };
+    private HttpClient ApiClient => ClientFactory.CreateClient("API");
+
+    private async Task HandleValidSubmit()
+    {
+        var response = await ApiClient.PostAsJsonAsync("api/project/create", newProject);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("✅ Thêm project thành công.");
+            newProject = new(); // reset form
+        }
+        else
+        {
+            Console.WriteLine("❌ Gửi project thất bại.");
+        }
+    }
+}

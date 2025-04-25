@@ -1,0 +1,71 @@
+﻿@page "/projects"
+@using System.Text.Json
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<h3>📋 Danh sách Project</h3>
+
+@if (projects == null)
+{
+    <p><em>Đang tải...</em></p>
+}
+else if (projects.Count == 0)
+{
+    <p>Không có project nào.</p>
+}
+else
+{
+    <ul>
+        @foreach (var project in projects)
+        {
+            <li>
+                <strong>@project.Name</strong> - @project.Description <br />
+                Hạn chót: @project.Deadline.ToString("dd/MM/yyyy")
+            </li>
+        }
+    </ul>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p class="text-danger">@errorMessage</p>
+}
+
+<button class="btn btn-primary mt-3" @onclick="@(() => Navigation.NavigateTo("/projects/create"))">➕ Thêm Project mới</button>
+
+@code {
+    private List<Project>? projects;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            projects = await Http.GetFromJsonAsync<List<Project>>("api/project");
+        }
+        catch (HttpRequestException)
+        {
+            errorMessage = "Không thể kết nối đến API. Vui lòng kiểm tra lại.";
+        }
+        catch (NotSupportedException)
+        {
+            errorMessage = "Định dạng dữ liệu không hợp lệ.";
+        }
+        catch (JsonException)
+        {
+            errorMessage = "Lỗi khi phân tích dữ liệu JSON.";
+        }
+    }
+
+    public class Project
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public DateTime Deadline { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+    }
+}
+

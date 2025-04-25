@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
-using TaskManage.Models;
+using TeamManage.Models;
 
 namespace TeamManage.Data
 {
