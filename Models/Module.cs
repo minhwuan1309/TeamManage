@@ -9,8 +9,8 @@ namespace TeamManage.Models
         public string Name { get; set; }
         public ProcessStatus Status { get; set; }
         public bool IsDeleted { get; set; } = false;
-        public string? AssignedUserId { get; set; }
-        public ApplicationUser AssignedUser { get; set; }
+
+        public ICollection<ModuleMember> ModuleMembers { get; set; }
 
         public Project Project { get; set; }
         public ICollection<TaskItem> Tasks { get; set; }

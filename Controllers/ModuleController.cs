@@ -21,7 +21,9 @@ namespace TeamManage.Controllers
         public async Task<IActionResult> GetModulesByProject([FromQuery] int projectId)
         {
             var modules = await _context.Modules
-                .Include(m=> m.AssignedUser)
+                .Include(m => m.Project)
+                .Include(m=> m.ModuleMembers)
+                    .ThenInclude(m => m.User)
                 .Where(m => m.ProjectId == projectId && !m.IsDeleted)
                 .ToListAsync();
 
@@ -31,8 +33,14 @@ namespace TeamManage.Controllers
                 ProjectId = m.ProjectId,
                 Name = m.Name,
                 Status = m.Status,
-                AssignedUserId = m.AssignedUserId,
-                AssignedUserName = m.AssignedUser?.FullName,
+                MemberIds = m.ModuleMembers
+                            .Where(mb => !mb.IsDeleted)
+                            .Select(mb => mb.UserId)
+                            .ToList(),
+                MemberNames = m.ModuleMembers
+                            .Where(mb => !mb.IsDeleted && mb.User != null)
+                            .Select(mb => mb.User.FullName)
+                            .ToList(),
                 IsDeleted = m.IsDeleted,
                 CreatedAt = m.CreatedAt,
                 UpdatedAt = m.UpdatedAt
@@ -46,7 +54,9 @@ namespace TeamManage.Controllers
         public async Task<IActionResult> GetModule(int id)
         {
             var module = await _context.Modules
-                    .Include(x => x.AssignedUser)
+                    .Include(m => m.Project)
+                    .Include(x => x.ModuleMembers)
+                        .ThenInclude(mb => mb.User)
                     .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
             if (module == null)
                 return NotFound("Không tìm thấy module.");
@@ -57,8 +67,14 @@ namespace TeamManage.Controllers
                 ProjectId = module.ProjectId,
                 Name = module.Name,
                 Status = module.Status,
-                AssignedUserId = module.AssignedUserId,
-                AssignedUserName = module.AssignedUser?.FullName,
+                MemberIds = module.ModuleMembers
+                            .Where(mb => !mb.IsDeleted)
+                            .Select(mb => mb.UserId)
+                            .ToList(),
+                MemberNames = module.ModuleMembers
+                            .Where(mb => !mb.IsDeleted && mb.User != null)
+                            .Select(mb => mb.User.FullName)
+                            .ToList(),
                 IsDeleted = module.IsDeleted,
                 CreatedAt = module.CreatedAt,
                 UpdatedAt = module.UpdatedAt
@@ -74,10 +90,15 @@ namespace TeamManage.Controllers
                 Name = moduleDTO.Name,
                 ProjectId = moduleDTO.ProjectId,
                 Status = moduleDTO.Status,
-                AssignedUserId = moduleDTO.AssignedUserId,
                 IsDeleted = false,
                 CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
+                UpdatedAt = DateTime.Now,
+                ModuleMembers = moduleDTO.MemberIds.Select(userId => new ModuleMember
+                {
+                    UserId = userId,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                }).ToList()
             };
 
             _context.Modules.Add(module);
@@ -90,14 +111,21 @@ namespace TeamManage.Controllers
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateModule(int id, [FromBody] ModuleDTO moduleDTO)
         {
-            var module = await _context.Modules.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+            var module = await _context.Modules
+                    .Include(m => m.Project)
+                    .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
             if (module == null)
                 return NotFound("Không tìm thấy module.");
 
             module.Name = moduleDTO.Name;
             module.Status = moduleDTO.Status;
-            module.AssignedUserId = moduleDTO.AssignedUserId;
             module.UpdatedAt = DateTime.Now;
+            module.ModuleMembers = moduleDTO.MemberIds.Select(userId => new ModuleMember
+            {
+                UserId = userId,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            }).ToList();
 
             _context.Modules.Update(module);
             await _context.SaveChangesAsync();
@@ -125,6 +153,27 @@ namespace TeamManage.Controllers
             return Ok(module.IsDeleted
                 ? "Đã xóa module."
                 : "Đã khôi phục module.");
+        }
+
+        [HttpPut("update-status/{id}")]
+        public async Task<IActionResult> UpdateModuleStatus(int id, [FromQuery] ProcessStatus status)
+        {
+            var module = await _context.Modules.FirstOrDefaultAsync(m => m.Id == id && !m.IsDeleted);
+            if (module == null)
+                return NotFound("Không tìm thấy module.");
+
+            module.Status = status;
+            module.UpdatedAt = DateTime.Now;
+
+            _context.Modules.Update(module);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = $"Cập nhật trạng thái module -> {status}",
+                moduleId = module.Id,
+                newStatus = module.Status.ToString()
+            });
         }
     }
 }

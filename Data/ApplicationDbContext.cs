@@ -17,6 +17,7 @@ namespace TeamManage.Data
         public DbSet<TaskItem> TaskItems { get; set; }
         public DbSet<Issue> Issues { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<ModuleMember> ModuleMembers { get; set; }
 
         // ========== Workflow ==========
         public DbSet<Workflow> Workflows { get; set; }
@@ -33,11 +34,16 @@ namespace TeamManage.Data
                 .WithMany(u => u.ProjectMemberships)
                 .HasForeignKey(pm => pm.UserId);
 
-            builder.Entity<Module>()
-                .HasOne(m => m.AssignedUser)
+            builder.Entity<ModuleMember>()
+                .HasOne(mm => mm.Module)
+                .WithMany(m => m.ModuleMembers)
+                .HasForeignKey(mm => mm.ModuleId);
+
+            builder.Entity<ModuleMember>()
+                .HasOne(mm => mm.User)
                 .WithMany()
-                .HasForeignKey(m => m.AssignedUserId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .HasForeignKey(mm => mm.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<TaskItem>()
                 .HasOne(t => t.AssignedUser)

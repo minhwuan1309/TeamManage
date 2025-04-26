@@ -8,8 +8,8 @@ namespace TeamManage.Models.DTO
         public int ProjectId { get; set; }
         public string Name { get; set; }
         public ProcessStatus Status { get; set; }
-        public string? AssignedUserId { get; set; }
-        public string? AssignedUserName { get; set; }
+        public List<string> MemberIds { get; set; } = new List<string>();
+        public List<string>? MemberNames { get; set; }
         public bool IsDeleted { get; set; }
 
         public DateTime CreatedAt { get; set; }
