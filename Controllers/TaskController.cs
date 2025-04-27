@@ -150,10 +150,10 @@ namespace TeamManage.Controllers
             return Ok(new {message = "Cập nhật task thành cong", task});
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteTask(int id)
         {
-            var task = await _context.TaskItems.FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
+            var task = await _context.TaskItems.FirstOrDefaultAsync(t => t.Id == id);
             if (task == null)
                 return NotFound("Không tìm thấy task.");
 
