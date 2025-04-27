@@ -156,9 +156,13 @@ namespace TeamManage.Controllers
                 return NotFound("Không tìm thấy dự án");
 
             // Cập nhật thông tin dự án
-            project.Name = projectDTO.Name;
-            project.Description = projectDTO.Description;
-            project.Deadline = projectDTO.Deadline;
+            if (!string.IsNullOrWhiteSpace(projectDTO.Name))
+                project.Name = projectDTO.Name;
+            if (!string.IsNullOrWhiteSpace(projectDTO.Description))
+                project.Description = projectDTO.Description;
+            if (projectDTO.Deadline != null)
+                project.Deadline = projectDTO.Deadline;
+            
             project.UpdatedAt = DateTime.Now;
 
             // Lấy danh sách thành viên hiện tại của dự án
@@ -167,49 +171,46 @@ namespace TeamManage.Controllers
                 .ToListAsync();
 
             // Xử lý thêm hoặc cập nhật thành viên
-            foreach (var member in projectDTO.Members)
+            if (projectDTO.Members != null)
             {
-                var existingMember = existingMembers.FirstOrDefault(m => m.UserId == member.UserId);
-                if (existingMember == null)
+                foreach (var member in projectDTO.Members)
                 {
-                    // Thêm thành viên mới
-                    var newMember = new ProjectMember
+                    var existingMember = existingMembers.FirstOrDefault(m => m.UserId == member.UserId);
+                    if (existingMember == null)
                     {
-                        UserId = member.UserId,
-                        ProjectId = id,
-                        RoleInProject = member.RoleInProject,
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now
-                    };
-                    _context.ProjectMembers.Add(newMember);
+                        // Thêm thành viên mới
+                        var newMember = new ProjectMember
+                        {
+                            UserId = member.UserId,
+                            ProjectId = id,
+                            RoleInProject = member.RoleInProject,
+                            CreatedAt = DateTime.Now,
+                            UpdatedAt = DateTime.Now
+                        };
+                        _context.ProjectMembers.Add(newMember);
+                    }
+                    else
+                    {
+                        // Cập nhật vai trò của thành viên hiện tại
+                        existingMember.RoleInProject = member.RoleInProject;
+                        existingMember.UpdatedAt = DateTime.Now;
+                        _context.ProjectMembers.Update(existingMember);
+                    }
                 }
-                else
+
+                // Xử lý xóa thành viên không còn trong danh sách
+                var memberIdsToKeep = projectDTO.Members.Select(m => m.UserId).ToList();
+                var membersToRemove = existingMembers
+                    .Where(m => !memberIdsToKeep.Contains(m.UserId))
+                    .ToList();
+
+                foreach (var memberToRemove in membersToRemove)
                 {
-                    // Cập nhật vai trò của thành viên hiện tại
-                    existingMember.RoleInProject = member.RoleInProject;
-                    existingMember.UpdatedAt = DateTime.Now;
-                    _context.ProjectMembers.Update(existingMember);
+                    memberToRemove.IsDeleted = true;
+                    memberToRemove.UpdatedAt = DateTime.Now;
+                    _context.ProjectMembers.Update(memberToRemove);
                 }
             }
-
-            // Xử lý xóa thành viên không còn trong danh sách
-            var memberIdsToKeep = projectDTO.Members?.Select(m => m.UserId).ToList();
-            if (memberIdsToKeep == null)
-            {
-                return BadRequest("Danh sách thành viên không được để trống.");
-            }
-
-            var membersToRemove = existingMembers
-                .Where(m => !memberIdsToKeep.Contains(m.UserId))
-                .ToList();
-
-            foreach (var memberToRemove in membersToRemove)
-            {
-                memberToRemove.IsDeleted = true;
-                memberToRemove.UpdatedAt = DateTime.Now;
-                _context.ProjectMembers.Update(memberToRemove);
-            }
-
 
             // Cập nhật dự án
             _context.Projects.Update(project);
@@ -221,6 +222,7 @@ namespace TeamManage.Controllers
                 project
             });
         }
+
 
         [Authorize]
         [HttpDelete("delete/{id}")]

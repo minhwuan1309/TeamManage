@@ -109,11 +109,15 @@ namespace TeamManage.Controllers
             if(user == null || user.IsDeleted)
                 return NotFound("Người dùng không tồn tại hoặc đã bị xóa.");
 
-            user.FullName = userDTO.FullName;
-            user.Phone = userDTO.Phone;
-            user.Avatar = userDTO.Avatar;
-            user.Role = userDTO.Role;
-            user.IsActive = userDTO.IsActive;
+            if (!string.IsNullOrWhiteSpace(userDTO.FullName))
+                user.FullName = userDTO.FullName;
+            if (!string.IsNullOrWhiteSpace(userDTO.Phone))
+                user.Phone = userDTO.Phone;
+            if (!string.IsNullOrWhiteSpace(userDTO.Avatar))
+                user.Avatar = userDTO.Avatar;
+            if (userDTO.Role != null)
+                user.Role = userDTO.Role;
+
             user.UpdatedAt = DateTime.Now;
 
             var result = await _user.UpdateAsync(user);

@@ -117,22 +117,29 @@ namespace TeamManage.Controllers
             if (module == null)
                 return NotFound("Không tìm thấy module.");
 
-            module.Name = moduleDTO.Name;
-            module.Status = moduleDTO.Status;
+            if (!string.IsNullOrWhiteSpace(moduleDTO.Name))
+                module.Name = moduleDTO.Name;
+            if (Enum.IsDefined(typeof(ProcessStatus), moduleDTO.Status))
+                module.Status = moduleDTO.Status;
+            
             module.UpdatedAt = DateTime.Now;
-            module.ModuleMembers = moduleDTO.MemberIds.Select(userId => new ModuleMember
+
+            if (moduleDTO.MemberIds != null)
             {
-                UserId = userId,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
-            }).ToList();
+                module.ModuleMembers = moduleDTO.MemberIds.Select(userId => new ModuleMember
+                {
+                    UserId = userId,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                }).ToList();
+            }
 
             _context.Modules.Update(module);
             await _context.SaveChangesAsync();
 
             return Ok(new
             {
-                message = "Cập nhật module thành cÔng",
+                message = "Cập nhật module thành công",
                 module
             });
         }
@@ -174,6 +181,25 @@ namespace TeamManage.Controllers
                 moduleId = module.Id,
                 newStatus = module.Status.ToString()
             });
+        }
+
+        [HttpGet("members/{moduleId}")]
+        public async Task<IActionResult> GetModuleMembers(int moduleId)
+        {
+            var members = await _context.ModuleMembers
+                .Where(m => m.ModuleId == moduleId && !m.IsDeleted)
+                .Include(m => m.User)
+                .Select(m => new
+                {
+                    UserId = m.UserId,
+                    FullName = m.User.FullName
+                })
+                .ToListAsync();
+
+            if(!members.Any())
+                return NotFound("Không tìm thấy thành viên nào trong module.");
+        
+            return Ok(members);
         }
     }
 }
