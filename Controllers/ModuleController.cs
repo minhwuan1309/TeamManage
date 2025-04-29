@@ -17,6 +17,8 @@ namespace TeamManage.Controllers
 
         public ModuleController(ApplicationDbContext context) => _context = context;
 
+        // ====================== Get Modules ======================
+
         [HttpGet]
         public async Task<IActionResult> GetModulesByProject([FromQuery] int projectId)
         {
@@ -82,6 +84,8 @@ namespace TeamManage.Controllers
             return Ok(module);
         }
 
+        // ====================== Create Modules ======================
+
         [HttpPost("create")]
         public async Task<IActionResult> CreateModule([FromBody] ModuleDTO moduleDTO)
         {
@@ -107,6 +111,8 @@ namespace TeamManage.Controllers
             return Ok(new {message ="Tạo module thành công", module});
             
         }
+
+        // ====================== Update Module ======================
 
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateModule(int id, [FromBody] ModuleDTO moduleDTO)
@@ -144,6 +150,8 @@ namespace TeamManage.Controllers
             });
         }
 
+        // ====================== Delete Modules ======================
+
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteModule(int id)
         {
@@ -161,6 +169,8 @@ namespace TeamManage.Controllers
                 ? "Đã xóa module."
                 : "Đã khôi phục module.");
         }
+
+        // ====================== Update Modules Status ======================
 
         [HttpPut("update-status/{id}")]
         public async Task<IActionResult> UpdateModuleStatus(int id, [FromQuery] ProcessStatus status)
@@ -182,6 +192,8 @@ namespace TeamManage.Controllers
                 newStatus = module.Status.ToString()
             });
         }
+
+        // ====================== Get Module's Members ======================
 
         [HttpGet("members/{moduleId}")]
         public async Task<IActionResult> GetModuleMembers(int moduleId)

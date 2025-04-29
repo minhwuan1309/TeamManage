@@ -6,10 +6,10 @@ namespace TeamManage.Models.DTO
     {
         public int? Id { get; set; }
         [Required(ErrorMessage = "Tên project không được để trống")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [Required(ErrorMessage = "Mô tả project không được để trống")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime Deadline { get; set; }

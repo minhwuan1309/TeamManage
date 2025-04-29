@@ -15,6 +15,8 @@ namespace TeamManage.Controllers
     {
         private readonly ApplicationDbContext _context;
         public TaskController(ApplicationDbContext context) => _context = context;
+        
+        // ====================== Get Tasks ======================
 
         [HttpGet("module/{moduleId}")]
         public async Task<IActionResult> GetTasksByModuleId(int moduleId)
@@ -68,8 +70,10 @@ namespace TeamManage.Controllers
 
             return Ok(result);
         }
+
+        // ====================== Create Tasks ======================
         
-        [HttpPost("module/{moduleId}")]
+        [HttpPost("create/{moduleId}")]
         public async Task<IActionResult> CreateTask(int moduleId, [FromBody] TaskDTO taskDTO)
         {
                 // Validate input
@@ -110,6 +114,8 @@ namespace TeamManage.Controllers
             return Ok(new {message = "Tạo task thành công", task});
         }
 
+        // ====================== Update Tasks ======================
+
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateTask(int id, [FromBody] TaskDTO taskDTO)
         {
@@ -147,8 +153,10 @@ namespace TeamManage.Controllers
             _context.TaskItems.Update(task);
             await _context.SaveChangesAsync();
 
-            return Ok(new {message = "Cập nhật task thành cong", task});
+            return Ok(new {message = "Cập nhật task thành công", task});
         }
+
+        // ====================== Delete Tasks (Soft Delete) ======================
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteTask(int id)
@@ -167,6 +175,8 @@ namespace TeamManage.Controllers
                 ? "Đã xóa task."
                 : "Đã khôi phục task.");
         }
+
+        // ====================== Update Task Status ======================
 
         [HttpPut("update-status/{id}")] 
         public async Task<IActionResult> UpdateTaskStatus(int id, [FromQuery] ProcessStatus status)

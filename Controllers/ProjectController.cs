@@ -21,8 +21,8 @@ namespace TeamManage.Controllers
             _context = context;
         }
 
-        // ✅ Cho phép test GET không cần đăng nhập (chỉ dùng dev/test)
-        [Authorize]
+        // ====================== Get Projects ======================
+
         [HttpGet]
         public async Task<IActionResult> GetAllProjects()
         {
@@ -54,7 +54,6 @@ namespace TeamManage.Controllers
             return Ok(result);
         }
 
-        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProjectById(int id)
         {
@@ -88,7 +87,8 @@ namespace TeamManage.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        // ====================== Create Project ======================
+
         [HttpPost("create")]
         public async Task<IActionResult> CreateProject([FromBody] ProjectDTO projectDTO)
         {
@@ -146,6 +146,8 @@ namespace TeamManage.Controllers
                 }
             );
         }
+
+        // ====================== Update Project ======================
 
         [Authorize(Roles = "Admin")]
         [HttpPut("update/{id}")]
@@ -212,7 +214,6 @@ namespace TeamManage.Controllers
                 }
             }
 
-            // Cập nhật dự án
             _context.Projects.Update(project);
             await _context.SaveChangesAsync();
 
@@ -223,8 +224,8 @@ namespace TeamManage.Controllers
             });
         }
 
+        // ====================== Delete Project (Soft Delete) ======================
 
-        [Authorize]
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteProject(int id)
         {
